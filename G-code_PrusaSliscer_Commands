@@ -1,0 +1,24 @@
+G90 ; use absolute coordinates
+M83 ; extruder relative mode
+M104 S150 ; set temporary nozzle temp to prevent oozing during homing
+M140 S{first_layer_bed_temperature[0]} ; set final bed temp
+G4 S30 ; allow partial nozzle warmup
+G28 ; home all axis
+
+G29 L{(max(25, first_layer_print_min[0] - 10))} F{(max(25, first_layer_print_min[1] - 10))} R{(min(print_bed_max[0]-25, first_layer_print_max[0] + 10))} B{(min(print_bed_max[1]-25, first_layer_print_max[1] + 10))} S12000 ; probes printbed with 25 mm boundaries or first layer + 10mm on each side
+
+G1 Z50 F240
+G1 X2.0 Y10 F3000 
+M104 S{first_layer_temperature[0]} ; set final nozzle temp
+M190 S{first_layer_bed_temperature[0]} ; wait for bed temp to stabilize
+M109 S{first_layer_temperature[0]} ; wait for nozzle temp to stabilize
+G1 Z2 F6000
+G1 Y{(max(3, first_layer_print_min[1]) - 5)} X{(max(3, first_layer_print_min[0]) - 5)} F11000 ; go on start position
+G1 Z0.300 F6000
+G1 X{(max(3, first_layer_print_min[0]) - 5)} E5 F500.0 ; go on start position
+G92 E0 ; Set extrusion distance to 0
+G1 Y{(max(5, first_layer_print_min[1]) - 5)+60} E12.0  F1000 ; intro line
+G1 X{(max(3, first_layer_print_min[0]) - 5)+1} Z0.400 F10000
+G1 Y{(max(5, first_layer_print_min[1]) - 5)} E20  F1000 ; intro line
+G92 E0 ; Set extrusion distance to 0
+G90 ; switch back to absolute mode
